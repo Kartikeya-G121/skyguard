@@ -1,0 +1,88 @@
+:root {
+  /* Palette. Flag colours are load-bearing: saffron only ever marks an anomaly,
+     green only ever marks a nominal state. Nothing else in the UI is coloured. */
+  --ink: #161b24;
+  --raise: #1e2531;
+  --raise-2: #262f3d;
+  --bone: #ece7dc;
+  --dim: #99a1b0;
+  --dimmer: #6f7887;
+  --rule: #2c3545;
+  --rule-bright: #3d4859;
+  --saffron: #e0813a;
+  --saffron-wash: #34241a;
+  --green: #46a583;
+  --green-wash: #1a2d27;
+  --navy: #24406e;
+  --navy-bright: #3c66a8;
+
+  /* The flag itself, used only as a motif — the rail edge and the cover wash.
+     Never on data: saffron-as-anomaly and green-as-nominal keep their own
+     tokens above so the two meanings never collide. */
+  --flag-saffron: #ff9933;
+  --flag-white: #ffffff;
+  --flag-green: #138808;
+  /* The chakra blue is lifted on the dark ground and deepened on paper, so the
+     watermark keeps the same weight in both. */
+  --flag-chakra: #5c82e0;
+  /* The wheel itself sits bluer than the structural chakra navy — it is a
+     watermark, not a rule, so it can carry more colour. */
+  --chakra-ink: #7aa4ff;
+  /* Strength of the tricolour wash behind the app. Lower on the dark ground,
+     where a saturated corner reads as a colour cast rather than as paper. */
+  --wash-warm: 8%;
+  --wash-cool: 7%;
+  --wash-blue: 5%;
+
+  /* Garamond for the headlines, a light grotesque for running text, a light
+     mono for anything an instrument would have printed. All three are drawn
+     for reading at length rather than for a landing page. */
+  --font-display: "EB Garamond", Georgia, serif;
+  --font-body: "Libre Franklin", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "DM Mono", ui-monospace, Menlo, monospace;
+  --font-deva: "Noto Sans Devanagari", var(--font-body);
+
+  --ease: cubic-bezier(0.83, 0, 0.17, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 0.7s;
+  --dur-fast: 0.18s;
+
+  /* Type scale */
+  --t-micro: 0.688rem;
+  --t-small: 0.8125rem;
+  --t-body: 0.9375rem;
+  --t-lead: 1.125rem;
+  --t-h3: 1.375rem;
+  --t-h2: clamp(1.75rem, 3.2vw, 2.75rem);
+  --t-h1: clamp(2.75rem, 8vw, 6.5rem);
+  --t-hero: clamp(3.5rem, 13vw, 11rem);
+
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --shell-w: 68px;
+}
+
+/* The paper palette. Same token names, same roles: `--ink` is the surface the
+   trace is drawn on and `--bone` is the mark, so every component works in both
+   without knowing which is active. Saffron and green are darkened here because
+   the values that read cleanly on a black console are too light on paper. */
+[data-theme="light"] {
+  --ink: #f3efe6;
+  --raise: #faf7f0;
+  --raise-2: #ebe5d8;
+  --bone: #1b212a;
+  --dim: #565e6b;
+  --dimmer: #6e7683;
+  --rule: #ded6c6;
+  --rule-bright: #bcb3a1;
+  --saffron: #9e4a09;
+  --saffron-wash: #f6e4d2;
+  --green: #1d6a51;
+  --flag-chakra: #1c3f94;
+  --chakra-ink: #1a4fd6;
+  --wash-warm: 10%;
+  --wash-cool: 9%;
+  --wash-blue: 6%;
+  --green-wash: #dceae4;
+  --navy: #2c4a7d;
+  --navy-bright: #24406e;
+}
