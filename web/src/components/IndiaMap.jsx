@@ -1,95 +1,94 @@
-import { memo, useState } from "react";
-import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
+import { memo, useEffect } from "react";
+import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
-const INDIA_GEO =
-  "https://cdn.jsdelivr.net/gh/udit-001/india-maps-data@main/geojson/india.geojson";
+/**
+ * The network locator, on an OpenStreetMap basemap.
+ *
+ * The tiles are fetched from OSM at runtime, so this view needs a network
+ * connection — offline it renders the pins over an empty pane. Attribution is
+ * required by the licence and is left switched on.
+ *
+ * The basemap is desaturated in CSS (`.netmap` in app.css) rather than being
+ * swapped for a themed tile service: it has to sit under the station states,
+ * and full-colour tiles compete with saffron-means-fault.
+ */
 
-// nominal → green, degraded → saffron, faulted → red, offline → dim
-const COLOR = {
-  nominal:  "var(--green)",
-  degraded: "var(--saffron)",
-  faulted:  "#ef4444",
-  offline:  "var(--dimmer)",
-};
+// The window the network sits in. Panning is bounded to it so the map cannot
+// be dragged off to somewhere the stations are not.
+const BOUNDS = [
+  [5.5, 66.0],
+  [38.5, 99.5],
+];
 
 function stateOf(r) {
-  if (!r?.reading) return "nominal";
+  if (!r.reading) return "nominal";
   if (r.reading.temp_c === null) return "offline";
-  if (!r.detection) return "nominal";
-  return r.detection.severity === "high" ? "faulted" : "degraded";
+  const d = r.detection;
+  if (!d) return "nominal";
+  return d.severity === "high" ? "faulted" : "degraded";
+}
+
+/** Fits the window once, after the container has its final size. */
+function FitIndia() {
+  const map = useMap();
+  useEffect(() => {
+    map.fitBounds(BOUNDS, { padding: [8, 8] });
+  }, [map]);
+  return null;
 }
 
 function IndiaMap({ readings, selectedId, onSelect }) {
   return (
-    <div style={{ background: "var(--ink)", borderRadius: 8 }}>
-      <ComposableMap
-        projection="geoMercator"
-        projectionConfig={{ scale: 1000, center: [82, 24] }}
-        style={{ width: "100%", height: "auto" }}
-      >
-        {/* One gradient across the whole map, not per state: the default
-            objectBoundingBox units would restart it inside every path. The
-            stops are mixed into --raise so the landmass stays opaque. */}
-        <defs>
-          <linearGradient id="india-wash" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="800" y2="600">
-            <stop offset="0" stopColor="color-mix(in srgb, var(--flag-saffron) 14%, var(--raise))" />
-            <stop offset="0.5" stopColor="color-mix(in srgb, var(--flag-chakra) 8%, var(--raise))" />
-            <stop offset="1" stopColor="color-mix(in srgb, var(--flag-green) 12%, var(--raise))" />
-          </linearGradient>
-        </defs>
+    <MapContainer
+      className="netmap"
+      bounds={BOUNDS}
+      maxBounds={BOUNDS}
+      maxBoundsViscosity={0.8}
+      minZoom={3}
+      maxZoom={9}
+      /* The wheel belongs to the page: trapping it inside the map means the
+         reader cannot scroll past this panel. Zoom is on the buttons and on
+         double-click. */
+      scrollWheelZoom={false}
+    >
+      <FitIndia />
+      <TileLayer
+        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        maxZoom={19}
+        detectRetina
+      />
 
-        <Geographies geography={INDIA_GEO}>
-          {({ geographies }) =>
-            geographies.map((geo) => (
-              <Geography
-                key={geo.rsmKey}
-                geography={geo}
-                style={{
-                  default: { fill: "url(#india-wash)", stroke: "var(--rule-bright)", strokeWidth: 0.9, outline: "none" },
-                  hover:   { fill: "var(--raise-2)", outline: "none" },
-                  pressed: { fill: "var(--raise-2)", outline: "none" },
-                }}
-              />
-            ))
-          }
-        </Geographies>
-
-        {readings.map((r) => {
-          const st = stateOf(r);
-          const selected = r.station.id === selectedId;
-          const color = COLOR[st];
-          return (
-            <Marker
-              key={r.station.id}
-              coordinates={[r.station.lon, r.station.lat]}
-              onClick={() => onSelect?.(r.station.id)}
+      {readings.map((r) => {
+        const state = stateOf(r);
+        const selected = r.station.id === selectedId;
+        return (
+          <CircleMarker
+            /* Leaflet only reapplies stroke and fill when the style changes —
+               a marker's class, radius and tooltip mode are fixed at the moment
+               it is created. Folding the state into the key remounts the one
+               marker that changed instead of leaving it painted as it was. */
+            key={`${r.station.id}-${state}-${selected}`}
+            center={[r.station.lat, r.station.lon]}
+            radius={selected ? 9 : 6}
+            className={`pin pin--${state} ${selected ? "is-selected" : ""}`}
+            eventHandlers={{ click: () => onSelect?.(r.station.id) }}
+          >
+            {/* Flagged stations name themselves; the rest name themselves on
+                hover, so fifteen labels do not collide over the basemap. */}
+            <Tooltip
+              className="pin__tip"
+              direction="right"
+              offset={[8, 0]}
+              permanent={state !== "nominal" || selected}
             >
-              {(st === "faulted" || st === "degraded") && (
-                <circle r={12} fill="none" stroke={color} strokeWidth={1.5} opacity={0.6}>
-                  <animate attributeName="r" from="8" to="18" dur="1.2s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" from="0.6" to="0" dur="1.2s" repeatCount="indefinite" />
-                </circle>
-              )}
-              <circle
-                r={selected ? 9 : 6}
-                fill={color}
-                stroke="var(--bone)"
-                strokeWidth={1.5}
-                style={{ cursor: "pointer" }}
-              />
-              <text
-                textAnchor="start"
-                x={10}
-                y={4}
-                style={{ fontFamily: "var(--font-mono)", fontSize: 9, fill: "var(--dim)", pointerEvents: "none" }}
-              >
-                {r.station.name}
-              </text>
-            </Marker>
-          );
-        })}
-      </ComposableMap>
-    </div>
+              {r.station.name}
+            </Tooltip>
+          </CircleMarker>
+        );
+      })}
+    </MapContainer>
   );
 }
 

@@ -867,6 +867,100 @@
   stroke-width: 2;
   vector-effect: non-scaling-stroke;
 }
+/* --- OpenStreetMap basemap -------------------------------------------------
+   The locator runs on Leaflet over OSM tiles. Raw tiles arrive full colour,
+   which fights the paper palette and, worse, puts arbitrary oranges and greens
+   under pins whose whole job is to mean fault and nominal. So the tile pane is
+   desaturated and pushed back; the pins are the only saturated thing on it. */
+.netmap {
+  width: 100%;
+  height: clamp(360px, 58vh, 560px);
+  border: 1px solid var(--rule);
+  background: var(--raise);
+  font: inherit;
+  /* Leaflet panes carry their own z-indices; contain them so nothing inside
+     the map can rise over the sticky topbar. */
+  z-index: 0;
+  isolation: isolate;
+}
+.netmap .leaflet-tile-pane {
+  filter: grayscale(1) contrast(0.82) brightness(1.08) sepia(0.18);
+  opacity: 0.82;
+}
+[data-theme="dark"] .netmap .leaflet-tile-pane {
+  filter: grayscale(1) invert(1) contrast(0.72) brightness(0.9);
+  opacity: 0.5;
+}
+
+.netmap .pin {
+  fill: var(--green);
+  fill-opacity: 1;
+  /* A ring in the panel colour, so a pin stays legible wherever it lands on
+     the basemap — over a city, a coastline or open sea. */
+  stroke: var(--raise);
+  stroke-width: 2;
+  cursor: pointer;
+}
+.netmap .pin--degraded,
+.netmap .pin--faulted {
+  fill: var(--saffron);
+}
+.netmap .pin--faulted {
+  animation: pin-throb 2.4s var(--ease-out) infinite;
+}
+.netmap .pin--offline {
+  fill: var(--dimmer);
+}
+.netmap .pin.is-selected {
+  stroke: var(--bone);
+  stroke-width: 3;
+}
+@keyframes pin-throb {
+  0%, 100% { fill-opacity: 1; }
+  50% { fill-opacity: 0.4; }
+}
+
+.netmap .pin__tip {
+  background: var(--raise);
+  color: var(--bone);
+  border: 1px solid var(--rule-bright);
+  border-radius: 2px;
+  box-shadow: none;
+  padding: 0.1rem 0.4rem;
+  font-family: var(--font-body);
+  font-size: var(--t-micro);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.netmap .pin__tip::before {
+  display: none;
+}
+
+.netmap .leaflet-control-attribution {
+  background: color-mix(in srgb, var(--raise) 85%, transparent);
+  color: var(--dimmer);
+  font-family: var(--font-body);
+  font-size: 10px;
+}
+.netmap .leaflet-control-attribution a {
+  color: var(--dim);
+}
+/* Leaflet ships `.leaflet-touch .leaflet-bar a { background: #fff }`, which
+   ties on specificity; the container class breaks the tie. */
+.netmap.leaflet-container .leaflet-bar a {
+  background: var(--raise);
+  color: var(--bone);
+  border-bottom-color: var(--rule);
+}
+.netmap.leaflet-container .leaflet-bar a:hover {
+  background: var(--raise-2);
+  color: var(--bone);
+}
+.netmap.leaflet-container .leaflet-bar a.leaflet-disabled {
+  background: var(--raise);
+  color: var(--dimmer);
+}
+
 .net__caption {
   border-top: 1px solid var(--rule);
   margin-top: 0.8rem;
@@ -1451,5 +1545,9 @@
   }
   .evidence__conf {
     width: 100%;
+  }
+  /* 58vh of map on a phone leaves no room for the caption under it. */
+  .netmap {
+    height: 320px;
   }
 }
