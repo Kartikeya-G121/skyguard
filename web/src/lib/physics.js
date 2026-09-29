@@ -105,12 +105,19 @@ export function stdev(values) {
   return Math.sqrt(v);
 }
 
-/** Robust z-score against a rolling window, using the median and MAD. */
-export function robustZ(value, window) {
+/**
+ * Robust z-score against a rolling window, using the median and MAD.
+ *
+ * `minMad` is the smallest spread worth trusting, about the sensor's
+ * resolution. Without it, a window of near-identical values (a sensor that
+ * has just come back from being latched) has a MAD near zero, and ordinary
+ * noise then scores as an extreme outlier.
+ */
+export function robustZ(value, window, minMad = 1e-6) {
   if (window.length < 4) return 0;
   const sorted = [...window].sort((a, b) => a - b);
   const median = sorted[Math.floor(sorted.length / 2)];
   const deviations = window.map((v) => Math.abs(v - median)).sort((a, b) => a - b);
-  const mad = deviations[Math.floor(deviations.length / 2)] || 1e-6;
+  const mad = Math.max(deviations[Math.floor(deviations.length / 2)], minMad);
   return (value - median) / (1.4826 * mad);
 }
