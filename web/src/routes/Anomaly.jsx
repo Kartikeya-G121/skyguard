@@ -33,7 +33,9 @@ export default function Anomaly() {
   const s = store.stations[event.station.id];
   const d = event.onset ?? event.latest;
   const unit = PARAM_UNIT[event.param] ?? "";
-  const window = s.history.slice(-96);
+  // A live node that has since been disconnected is no longer in the store;
+  // its evidence falls back to the trace frozen at onset.
+  const window = s ? s.history.slice(-96) : event.onsetHistory;
   void tick;
 
   return (
@@ -67,7 +69,7 @@ export default function Anomaly() {
             <BarographTrace
               samples={window}
               param={event.param === "multi" ? "temp_c" : event.param}
-              expected={window.map((h) => s.expected(h.t)[event.param === "multi" ? "temp_c" : event.param])}
+              expected={s ? window.map((h) => s.expected(h.t)[event.param === "multi" ? "temp_c" : event.param]) : null}
               variant="panel"
               height={200}
               showAxis
