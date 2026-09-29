@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { STATIONS } from "./stations.js";
 import { sampleAt } from "./simulate.js";
 import { detect, fitDiurnal, peerContext } from "./detect.js";
@@ -39,6 +39,26 @@ export function StreamProvider({ children }) {
     return () => clearInterval(id);
   }, [running, speed]);
 
+  // Presenter control: run the replay forward, sample by sample, until the
+  // detector opens a new event. Stepping rather than jumping keeps the history
+  // and the temporal model exactly as they would be at normal speed.
+  const skipToNextEvent = useCallback(() => {
+    const s = store.current;
+    const startSeq = s.eventSeq;
+    runUntil(s, () => s.eventSeq !== startSeq, 1);
+    setTickCount((n) => n + 1);
+    return s.eventSeq !== startSeq ? s.events[0] : null;
+  }, []);
+
+  // The replay is deterministic, so an evidence link opened in a fresh tab can
+  // be honoured by replaying forward until that event has been raised again.
+  const catchUpToEvent = useCallback((seq) => {
+    const s = store.current;
+    if (!(seq > s.eventSeq)) return;
+    runUntil(s, () => s.eventSeq >= seq, 3);
+    setTickCount((n) => n + 1);
+  }, []);
+
   const value = useMemo(
     () => ({
       tick: tickCount,
@@ -46,11 +66,13 @@ export function StreamProvider({ children }) {
       setSpeed,
       running,
       setRunning,
+      skipToNextEvent,
+      catchUpToEvent,
       store: store.current,
       epoch: EPOCH,
       stepMinutes: STEP_MIN,
     }),
-    [tickCount, speed, running]
+    [tickCount, speed, running, skipToNextEvent, catchUpToEvent]
   );
 
   return <StreamContext.Provider value={value}>{children}</StreamContext.Provider>;
@@ -133,6 +155,12 @@ function restartDay(store) {
   }
   store.hoursIn = 0;
   store.day += 1;
+}
+
+/** Advance sample by sample until `done()` holds or `days` of replay have run. */
+function runUntil(store, done, days) {
+  const maxSteps = (days * 24 * 60) / STEP_MIN + 1;
+  for (let i = 0; i < maxSteps && !done(); i++) advance(store);
 }
 
 function advance(store) {
