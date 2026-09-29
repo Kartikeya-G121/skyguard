@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import BarographTrace from "../components/BarographTrace.jsx";
@@ -12,8 +13,13 @@ import { TYPE_LABEL, PARAM_LABEL, PARAM_UNIT, LAYER_LABEL } from "../lib/contrac
  */
 export default function Anomaly() {
   const { id } = useParams();
-  const { store, tick } = useStream();
+  const { store, tick, catchUpToEvent } = useStream();
   const event = store.events.find((e) => e.id === id);
+  const seq = Number(/^EV-(\d+)$/.exec(id ?? "")?.[1]);
+
+  useEffect(() => {
+    if (!event) catchUpToEvent(seq);
+  }, [event, seq, catchUpToEvent]);
 
   if (!event) {
     return (
