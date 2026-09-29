@@ -4,8 +4,7 @@ import { motion } from "motion/react";
 import IndiaMap from "../components/IndiaMap.jsx";
 import StatusDot from "../components/StatusDot.jsx";
 import BarographTrace from "../components/BarographTrace.jsx";
-import { useStream } from "../lib/useStream.jsx";
-import { STATIONS } from "../lib/stations.js";
+import { useStream, stationList } from "../lib/useStream.jsx";
 import { TYPE_LABEL, PARAM_LABEL } from "../lib/contract.js";
 
 /**
@@ -18,7 +17,7 @@ export default function Network() {
   const [selected, setSelected] = useState(null);
 
   const rows = useMemo(
-    () => STATIONS.map((s) => store.stations[s.id]),
+    () => stationList(store).map((s) => store.stations[s.id]),
     [store, tick]
   );
 
@@ -64,8 +63,8 @@ export default function Network() {
           <figcaption className="net__caption">
             <span className="eyebrow">Station network</span>
             <p>
-              Fifteen stations, coloured by what the detector currently makes of each
-              one. Pick one to read its streams; a fault that moves every station at
+              Fifteen simulated stations, plus the ESP32 node when one is connected,
+              coloured by what the detector currently makes of each one. Pick one to read its streams; a fault that moves every station at
               once is weather, a fault that moves one is the instrument.
             </p>
           </figcaption>

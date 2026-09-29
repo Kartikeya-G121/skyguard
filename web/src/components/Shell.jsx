@@ -16,7 +16,7 @@ const NAV = [
  * thing you picked.
  */
 export default function Shell() {
-  const { store, speed, setSpeed, running, setRunning, epoch, tick, skipToNextEvent } =
+  const { store, speed, setSpeed, running, setRunning, epoch, tick, skipToNextEvent, live } =
     useStream();
   const location = useLocation();
   const navigate = useNavigate();
@@ -48,6 +48,11 @@ export default function Shell() {
         <div className="rail__foot">
           <ThemeToggle />
           <span className="rail__badge mono">SIM</span>
+          {live.status === "connected" && (
+            <NavLink to="/edge" className="rail__badge rail__badge--live mono" title="ESP32 connected">
+              LIVE
+            </NavLink>
+          )}
         </div>
       </aside>
 
@@ -63,8 +68,10 @@ export default function Shell() {
           <div className="topbar__note">
             <span className="eyebrow">Simulated stream</span>
             <p>
-              Values are synthesised from a station model with injected faults. Nothing on
-              screen is a live measurement.
+              Values are synthesised from a station model with injected faults.{" "}
+              {live.status === "connected"
+                ? "Only the ESP32 live node reports real sensor readings."
+                : "Nothing on screen is a live measurement."}
             </p>
           </div>
 

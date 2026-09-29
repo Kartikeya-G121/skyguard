@@ -7,8 +7,7 @@ import Chakra from "../components/Chakra.jsx";
 import BarographTrace from "../components/BarographTrace.jsx";
 import StatusDot from "../components/StatusDot.jsx";
 import ThemeToggle from "../components/ThemeToggle.jsx";
-import { useStream } from "../lib/useStream.jsx";
-import { STATIONS } from "../lib/stations.js";
+import { useStream, stationList } from "../lib/useStream.jsx";
 import { TYPE_LABEL } from "../lib/contract.js";
 
 const ANCHOR = "42182099999"; // Delhi Safdarjung — the reading on the cover
@@ -30,8 +29,9 @@ export default function Cover() {
 
   // Anything the detector is unhappy about comes to the top of the preview, so
   // the cover shows the actual state of the network rather than a fixed list.
-  const flagged = STATIONS.filter((st) => store.stations[st.id]?.detection);
-  const preview = [...flagged, ...STATIONS.filter((st) => !store.stations[st.id]?.detection)].slice(0, 6);
+  const all = stationList(store);
+  const flagged = all.filter((st) => store.stations[st.id]?.detection);
+  const preview = [...flagged, ...all.filter((st) => !store.stations[st.id]?.detection)].slice(0, 6);
 
   useEffect(() => {
     // Lenis is driven from a plain rAF loop. Handing it a GSAP-style elapsed
@@ -128,7 +128,7 @@ export default function Cover() {
           <div className="covernet__head">
             <span className="eyebrow">The network, right now</span>
             <span className="mono covernet__count">
-              {flagged.length} of {STATIONS.length} flagged
+              {flagged.length} of {all.length} flagged
             </span>
           </div>
 
