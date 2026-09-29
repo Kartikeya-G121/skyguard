@@ -12,11 +12,14 @@ export default defineConfig({
   build: {
     rolldownOptions: {
       output: {
-        // Keep the map and animation libraries out of the app chunk so a
-        // redeploy of app code does not invalidate them in the browser cache.
+        // Keep the map and UI libraries out of the app chunk so a redeploy of
+        // app code does not invalidate them in the browser cache. The MQTT
+        // client is left alone: it is loaded only when a device connects.
         manualChunks(id) {
           if (id.includes("leaflet")) return "map";
-          if (id.includes("node_modules")) return "vendor";
+          if (/node_modules\/(react|react-dom|react-router|scheduler|motion|motion-dom|motion-utils|framer-motion|lenis)\//.test(id)) {
+            return "vendor";
+          }
         },
       },
     },

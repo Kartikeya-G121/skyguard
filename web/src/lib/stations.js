@@ -72,3 +72,23 @@ export function neighbours(station, n = 3) {
     .sort((a, b) => a.km - b.km)
     .slice(0, n);
 }
+
+/**
+ * The physical node: an ESP32 (real, or in the Wokwi simulator) publishing
+ * over MQTT. It is kept out of `STATIONS` on purpose, so no simulated station
+ * scores itself against a sensor someone is dragging a slider on, but it uses
+ * them as its own neighbours. Placed at BMS College of Engineering, Bengaluru;
+ * the regime only sets the temporal layer's tolerance.
+ *
+ * @type {Station}
+ */
+export const LIVE_STATION = {
+  id: "ESP32-LIVE",
+  name: "ESP32 live node",
+  nameHi: "लाइव सेंसर",
+  lat: 12.941,
+  lon: 77.566,
+  elev: 900,
+  regime: "humid",
+  live: true,
+};
