@@ -90,6 +90,22 @@ Offsets are hours into the 24-hour replay window. The schedule is in `web/src/li
 
 After 24 simulated hours the replay starts the day again (the "pass" counter in the top bar goes up).
 
+## Live ESP32 node
+
+A real ESP32, or one running in the [Wokwi](https://wokwi.com) simulator, can join the network as a 16th
+station. It publishes readings over MQTT, and the dashboard scores them with the same detector,
+comparing them against the node's own calibrated baseline and its nearest simulated neighbours.
+
+1. Run [`firmware/wokwi`](firmware/README.md) in Wokwi, with a unique `DEVICE_ID`.
+2. In the dashboard, open **Fleet**, enter that device ID and press **Connect**. Or open `/edge?device=<id>`.
+3. Wait about 20 s for calibration. Then drag the DHT22 sliders, turn the pressure knob, or press
+   **FREEZE** / **DROP** to cause faults live.
+
+![Live device panel](docs/screenshots/live-device.png)
+
+The simulated replay continues unchanged alongside it. The firmware README lists the circuit, the
+message format, and which action raises which incident.
+
 ## How detection works
 
 `web/src/lib/detect.js` runs four layers in the browser on each 10-minute sample. The detector sees only the
@@ -114,9 +130,12 @@ web/
   src/lib/detect.js     the four-layer detector
   src/lib/physics.js    dewpoint, RH and plausibility checks
   src/lib/useStream.jsx replay clock and state; the only place the UI reads data from
+  src/lib/live.js       MQTT link to the ESP32 node
   src/lib/contract.js   the Reading / Detection payload contract
   src/routes/           the six views
-  src/components/       map, traces, meters, shell
+  src/components/       map, traces, meters, shell, live device panel
+firmware/
+  wokwi/                ESP32 sketch, circuit and library list for Wokwi
 ```
 
 ## Connecting real data
