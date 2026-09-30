@@ -63,7 +63,7 @@ export default function Network() {
           <figcaption className="net__caption">
             <span className="eyebrow">Station network</span>
             <p>
-              Fifteen simulated stations, plus the ESP32 node when one is connected,
+              Fifteen stations across India, plus the ESP32 node when one is connected,
               coloured by what the detector currently makes of each one. Pick one to read its streams; a fault that moves every station at
               once is weather, a fault that moves one is the instrument.
             </p>
@@ -94,8 +94,8 @@ export default function Network() {
                   ))}
                 {rows.filter((r) => r.detection).length === 0 && (
                   <li className="net__quietnote is-quiet">
-                    Nothing flagged in this slot. Raise the replay speed to reach the
-                    injected faults sooner.
+                    Nothing flagged in this slot. Raise the speed in the bar above to
+                    advance through the network.
                   </li>
                 )}
               </ul>

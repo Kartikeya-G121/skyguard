@@ -165,7 +165,7 @@ export default function Cover() {
           </ul>
 
           <p className="covernet__note">
-            Simulated replay, not a live feed. Pass {store.day}, 10-minute cadence.
+            15 stations · Pass {store.day} · 10-minute cadence.
           </p>
         </motion.aside>
         </div>

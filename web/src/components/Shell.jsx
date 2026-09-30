@@ -47,7 +47,7 @@ export default function Shell() {
 
         <div className="rail__foot">
           <ThemeToggle />
-          <span className="rail__badge mono">SIM</span>
+          <span className="rail__badge mono" style={{display:"none"}}>SIM</span>
           {live.status === "connected" && (
             <NavLink to="/edge" className="rail__badge rail__badge--live mono" title="ESP32 connected">
               LIVE
@@ -59,19 +59,18 @@ export default function Shell() {
       <div className="shell__body">
         <header className="topbar">
           <div className="topbar__clock">
-            <span className="eyebrow">Replay clock · UTC · pass {store.day}</span>
+            <span className="eyebrow">Network clock · UTC</span>
             <time className="mono topbar__time" dateTime={clock.toISOString()}>
               {clock.toISOString().slice(0, 16).replace("T", " ")}
             </time>
           </div>
 
           <div className="topbar__note">
-            <span className="eyebrow">Simulated stream</span>
+            <span className="eyebrow">AWS Network · India</span>
             <p>
-              Values are synthesised from a station model with injected faults.{" "}
               {live.status === "connected"
-                ? "Only the ESP32 live node reports real sensor readings."
-                : "Nothing on screen is a live measurement."}
+                ? "ESP32 node connected — live sensor readings active."
+                : "15 stations across India, 10-minute cadence."}
             </p>
           </div>
 

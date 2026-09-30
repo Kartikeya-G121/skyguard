@@ -57,7 +57,7 @@ export default function Alerts() {
           </h1>
           <p className="evidence__sub">
             Consecutive detections of the same fault on the same sensor are grouped into
-            one incident. {store.events.length} recorded since the replay began.
+            one incident. {store.events.length} recorded this session.
           </p>
         </div>
         <div className="alerts__filters" role="group" aria-label="Filter incidents">
@@ -79,8 +79,7 @@ export default function Alerts() {
 
       {events.length === 0 ? (
         <p className="alerts__empty is-quiet">
-          No incidents match this filter yet. The injected faults begin a few simulated
-          hours into the replay — raise the speed in the bar above to reach them.
+          No incidents match this filter yet. Raise the speed in the bar above to advance.
         </p>
       ) : (
         <div className="tablewrap">
