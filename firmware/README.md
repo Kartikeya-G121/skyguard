@@ -1,4 +1,15 @@
-# SkyGuard ESP32 node
+# SkyGuard ESP32 node — Wokwi
+
+> **Three builds live here.** [`wokwi-demo/`](wokwi-demo/README.md) is the one to record the
+> SIH video with: paste two files into wokwi.com and it plays the whole architecture by itself in
+> two minutes. This page covers the original **Wokwi** node: a DHT22 and a
+> potentiometer, Wi-Fi and plain MQTT, meant to be the quickest thing to get on screen.
+> [`cirkit/`](cirkit/README.md) is the fuller build for
+> [Cirkit Designer](https://app.cirkitdesigner.com/project) — a BME280 over I²C and the whole
+> protocol ladder from the deck: MQTT over TLS at QoS 1 with a last will, a LoRa hop through a
+> gateway for sites with no Wi-Fi, an NVS buffer that drains over HTTPS when the link returns,
+> plus SNTP, OTA and the deep-sleep duty cycle.
+
 
 An ESP32 station that reads temperature, humidity and pressure, runs the cheap on-device checks, and
 publishes each sample over MQTT. The dashboard adds it to the network as the **ESP32 live node**, a

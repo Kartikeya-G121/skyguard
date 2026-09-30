@@ -1,0 +1,7 @@
+# Tells the Wokwi VS Code extension where PlatformIO puts the build.
+# Run `pio run` first, then F1 -> "Wokwi: Start Simulator".
+
+[wokwi]
+version = 1
+firmware = '.pio/build/esp32dev/firmware.bin'
+elf = '.pio/build/esp32dev/firmware.elf'
