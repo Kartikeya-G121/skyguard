@@ -1,0 +1,12 @@
+# Cirkit Designer / Arduino IDE library list for both sketches.
+# In Cirkit Designer these go in the project's Libraries panel; in the Arduino
+# IDE, Tools -> Manage Libraries and search for each name.
+
+Adafruit BME280 Library      # temperature, pressure and humidity over I2C
+Adafruit Unified Sensor      # pulled in by the BME280 library
+LoRa                         # Sandeep Mistry, for the SX1278 / RFM95 radio
+MQTT                         # 256dpi "arduino-mqtt": QoS 1, LWT, retained
+
+# Note on the MQTT library: PubSubClient is the more common choice, but it
+# only ever publishes at QoS 0, so there is no PUBACK to wait for and no
+# delivery guarantee. This project needs QoS 1, so it uses arduino-mqtt.
