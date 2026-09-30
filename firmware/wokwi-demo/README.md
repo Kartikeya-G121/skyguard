@@ -3,7 +3,38 @@
 **Use this one to record.** It plays the whole architecture by itself in about
 two minutes. Press ▶ and record; you don't have to touch anything.
 
-## Run it (about 3 minutes to set up)
+## Running it in VS Code? Read this first
+
+**You must run `PlatformIO: Build` before `Wokwi: Start Simulator`.** The
+compiled firmware lives in `.pio/`, which is deliberately not in git — it is
+build output and it is huge. A fresh clone therefore has no `firmware.bin`, and
+the simulator will fail with a "cannot find firmware" error until you build
+once. That is the single most common reason this does not start.
+
+1. **F1** -> `Wokwi: Request a new License` (free, one per person)
+2. Open **this folder** (`firmware/wokwi-demo/`) as the VS Code workspace root.
+   Not the repository root, and not `firmware/wokwi/` — that one is the
+   browser-only build and has no `wokwi.toml`.
+3. **F1** -> `PlatformIO: Build`, and wait. The first build downloads the ESP32
+   toolchain, which is roughly a gigabyte.
+4. **F1** -> `Wokwi: Start Simulator`
+
+### On Windows
+
+Two things bite on Windows specifically:
+
+- **Long paths.** PlatformIO builds to paths like
+  `.pio\build\esp32dev\FrameworkArduino\...`, which blows past the old
+  260-character limit if the repository sits somewhere deep like
+  `C:\Users\you\OneDrive\Documents\GitHub\`. The build fails with
+  confusing "cannot open output file" errors. Either clone to a short path such
+  as `C:\dev\skyguard`, or enable long paths:
+  `git config --global core.longpaths true` and turn on
+  *Win32 long paths* in Group Policy.
+- **Antivirus.** Real-time scanning on `.pio` makes the first build extremely
+  slow. Excluding the folder helps a lot.
+
+## Run it on wokwi.com instead (about 3 minutes, nothing to install)
 
 1. Go to <https://wokwi.com/projects/new/esp32> — no account needed to run it.
 2. Click the **`diagram.json`** tab, select all, and paste in
