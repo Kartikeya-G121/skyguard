@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useStream } from "../lib/useStream.jsx";
-import { STATIONS } from "../lib/stations.js";
+import { useStream, stationList } from "../lib/useStream.jsx";
+import LivePanel from "../components/LivePanel.jsx";
 import { TYPE_LABEL } from "../lib/contract.js";
 import Meter from "../components/Meter.jsx";
 
@@ -36,7 +36,7 @@ export default function Edge() {
 
   const rows = useMemo(
     () =>
-      STATIONS.map((s) => {
+      stationList(store).map((s) => {
         const st = store.stations[s.id];
         const dropouts = st.history.filter((h) => h.temp_c === null).length;
         return {
@@ -82,6 +82,8 @@ export default function Edge() {
       </header>
 
       <div className="edge__grid">
+        <LivePanel />
+
         <section className="panel edge__split">
           <h2 className="eyebrow">Where each layer runs</h2>
           <div className="tablewrap">

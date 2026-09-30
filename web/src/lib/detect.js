@@ -27,6 +27,9 @@ const RELIABILITY = { statistical: 0.75, temporal: 0.7, physical: 0.95, spatial:
 const WINDOW = 24;
 const PARAMS = ["temp_c", "pres_hpa", "rh_pct"];
 const UNIT = { temp_c: "°C", pres_hpa: "hPa", rh_pct: "%" };
+// Spread below which the statistical layer stops trusting the window: roughly
+// the resolution of an AWS-grade sensor for each parameter.
+const MIN_MAD = { temp_c: 0.1, pres_hpa: 0.05, rh_pct: 0.5 };
 
 const fmt = (v, p) => (p === "pres_hpa" ? v.toFixed(1) : v.toFixed(1));
 
@@ -70,7 +73,7 @@ export function detect(station, history, sample, context = {}) {
   let worstZParam = null;
   for (const p of PARAMS) {
     const window = recent.map((h) => h[p]);
-    const z = Math.abs(robustZ(sample[p], window));
+    const z = Math.abs(robustZ(sample[p], window, MIN_MAD[p]));
     if (z > worstZ) {
       worstZ = z;
       worstZParam = p;

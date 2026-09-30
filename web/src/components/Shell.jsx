@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import ThemeToggle from "./ThemeToggle.jsx";
 import { useStream } from "../lib/useStream.jsx";
@@ -16,8 +16,17 @@ const NAV = [
  * thing you picked.
  */
 export default function Shell() {
-  const { store, speed, setSpeed, running, setRunning, epoch, tick } = useStream();
+  const { store, speed, setSpeed, running, setRunning, epoch, tick, skipToNextEvent, live } =
+    useStream();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // On the evidence view the new incident replaces the one on screen; anywhere
+  // else the current view simply catches up to the new moment in the replay.
+  const skip = () => {
+    const event = skipToNextEvent();
+    if (event && location.pathname.startsWith("/anomaly/")) navigate(`/anomaly/${event.id}`);
+  };
   const clock = new Date(epoch + store.hoursIn * 3600e3);
 
   return (
@@ -39,6 +48,11 @@ export default function Shell() {
         <div className="rail__foot">
           <ThemeToggle />
           <span className="rail__badge mono">SIM</span>
+          {live.status === "connected" && (
+            <NavLink to="/edge" className="rail__badge rail__badge--live mono" title="ESP32 connected">
+              LIVE
+            </NavLink>
+          )}
         </div>
       </aside>
 
@@ -54,8 +68,10 @@ export default function Shell() {
           <div className="topbar__note">
             <span className="eyebrow">Simulated stream</span>
             <p>
-              Values are synthesised from a station model with injected faults. Nothing on
-              screen is a live measurement.
+              Values are synthesised from a station model with injected faults.{" "}
+              {live.status === "connected"
+                ? "Only the ESP32 live node reports real sensor readings."
+                : "Nothing on screen is a live measurement."}
             </p>
           </div>
 
@@ -79,6 +95,13 @@ export default function Shell() {
                 </button>
               ))}
             </div>
+            <button
+              className="transport__btn"
+              onClick={skip}
+              title="Run the replay forward until the detector opens the next incident"
+            >
+              Next incident →
+            </button>
             <span className="transport__tick mono" aria-hidden="true">
               {String(tick % 1000).padStart(3, "0")}
             </span>

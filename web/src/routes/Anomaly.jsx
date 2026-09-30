@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import BarographTrace from "../components/BarographTrace.jsx";
@@ -12,8 +13,13 @@ import { TYPE_LABEL, PARAM_LABEL, PARAM_UNIT, LAYER_LABEL } from "../lib/contrac
  */
 export default function Anomaly() {
   const { id } = useParams();
-  const { store, tick } = useStream();
+  const { store, tick, catchUpToEvent } = useStream();
   const event = store.events.find((e) => e.id === id);
+  const seq = Number(/^EV-(\d+)$/.exec(id ?? "")?.[1]);
+
+  useEffect(() => {
+    if (!event) catchUpToEvent(seq);
+  }, [event, seq, catchUpToEvent]);
 
   if (!event) {
     return (
@@ -27,7 +33,9 @@ export default function Anomaly() {
   const s = store.stations[event.station.id];
   const d = event.onset ?? event.latest;
   const unit = PARAM_UNIT[event.param] ?? "";
-  const window = s.history.slice(-96);
+  // A live node that has since been disconnected is no longer in the store;
+  // its evidence falls back to the trace frozen at onset.
+  const window = s ? s.history.slice(-96) : event.onsetHistory;
   void tick;
 
   return (
@@ -61,7 +69,7 @@ export default function Anomaly() {
             <BarographTrace
               samples={window}
               param={event.param === "multi" ? "temp_c" : event.param}
-              expected={window.map((h) => s.expected(h.t)[event.param === "multi" ? "temp_c" : event.param])}
+              expected={s ? window.map((h) => s.expected(h.t)[event.param === "multi" ? "temp_c" : event.param]) : null}
               variant="panel"
               height={200}
               showAxis

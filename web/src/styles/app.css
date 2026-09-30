@@ -109,6 +109,12 @@
   color: var(--bone);
   border-color: var(--bone);
 }
+.rail__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
 .rail__badge {
   font-size: var(--t-micro);
   letter-spacing: 0.14em;
@@ -1322,6 +1328,81 @@
 .edge__fleet {
   grid-column: 1 / -1;
 }
+.edge__live {
+  grid-column: 1 / -1;
+  padding: 1.1rem;
+}
+.live__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.live__status {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.5rem 0 0;
+  font-size: var(--t-small);
+}
+.live__form {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.live__input {
+  border: 1px solid var(--rule-bright);
+  background: transparent;
+  color: var(--bone);
+  padding: 0.45rem 0.6rem;
+  font-size: var(--t-small);
+  width: min(240px, 100%);
+}
+.live__input:focus {
+  outline: none;
+  border-color: var(--bone);
+}
+.live__input:disabled {
+  color: var(--dimmer);
+}
+.live__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 0 1.6rem;
+  margin-top: 1rem;
+}
+.live__now {
+  display: flex;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.live__now dt {
+  font-size: var(--t-micro);
+  color: var(--dimmer);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.live__now dd {
+  margin: 0.2rem 0 0;
+  font-size: 1.3rem;
+}
+.live__actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.rail__badge--live {
+  color: var(--green);
+  border-color: var(--green);
+}
+.netmap .pin.is-live {
+  stroke: var(--bone);
+  stroke-width: 2.5;
+}
 .edge__inputs {
   display: flex;
   gap: 1.6rem;
@@ -1392,6 +1473,9 @@
   .station__grid,
   .evidence__grid,
   .edge__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .live__body {
     grid-template-columns: minmax(0, 1fr);
   }
   .evidence__col {

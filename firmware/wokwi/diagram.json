@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "author": "SkyGuard",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": -115,
+      "left": -130,
+      "attrs": { "temperature": "24", "humidity": "40" }
+    },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": -110, "left": 150, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnFreeze",
+      "top": 190,
+      "left": 190,
+      "attrs": { "color": "blue", "label": "FREEZE" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnDrop",
+      "top": 260,
+      "left": 190,
+      "attrs": { "color": "yellow", "label": "DROP" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledAlert",
+      "top": 40,
+      "left": 230,
+      "attrs": { "color": "red", "label": "EDGE" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledTx",
+      "top": 40,
+      "left": 290,
+      "attrs": { "color": "green", "label": "TX" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 120,
+      "left": 220,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 120,
+      "left": 280,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "dht1:VCC", "esp:3V3", "red", [] ],
+    [ "dht1:GND", "esp:GND.1", "black", [] ],
+    [ "dht1:SDA", "esp:15", "green", [] ],
+    [ "pot1:VCC", "esp:3V3", "red", [] ],
+    [ "pot1:GND", "esp:GND.1", "black", [] ],
+    [ "pot1:SIG", "esp:34", "orange", [] ],
+    [ "btnFreeze:1.l", "esp:18", "blue", [] ],
+    [ "btnFreeze:2.l", "esp:GND.2", "black", [] ],
+    [ "btnDrop:1.l", "esp:19", "gold", [] ],
+    [ "btnDrop:2.l", "esp:GND.2", "black", [] ],
+    [ "esp:4", "r1:1", "red", [] ],
+    [ "r1:2", "ledAlert:A", "red", [] ],
+    [ "ledAlert:C", "esp:GND.2", "black", [] ],
+    [ "esp:16", "r2:1", "green", [] ],
+    [ "r2:2", "ledTx:A", "green", [] ],
+    [ "ledTx:C", "esp:GND.2", "black", [] ]
+  ],
+  "dependencies": {}
+}

@@ -72,7 +72,7 @@ function IndiaMap({ readings, selectedId, onSelect }) {
             key={`${r.station.id}-${state}-${selected}`}
             center={[r.station.lat, r.station.lon]}
             radius={selected ? 9 : 6}
-            className={`pin pin--${state} ${selected ? "is-selected" : ""}`}
+            className={`pin pin--${state} ${selected ? "is-selected" : ""} ${r.station.live ? "is-live" : ""}`}
             eventHandlers={{ click: () => onSelect?.(r.station.id) }}
           >
             {/* Flagged stations name themselves; the rest name themselves on
@@ -81,7 +81,7 @@ function IndiaMap({ readings, selectedId, onSelect }) {
               className="pin__tip"
               direction="right"
               offset={[8, 0]}
-              permanent={state !== "nominal" || selected}
+              permanent={state !== "nominal" || selected || r.station.live}
             >
               {r.station.name}
             </Tooltip>
